@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { sanitizeCompany, padIndex, buildLicenseName, buildLicenseNames } from "../lib.js";
+import { sanitizeCompany, padIndex, buildLicenseName, buildLicenseNames, validateInputs } from "../lib.js";
 
 test("sanitizeCompany removes whitespace and underscores, keeps other chars", () => {
   assert.equal(sanitizeCompany("  Acme Corp. "), "AcmeCorp.");
@@ -32,4 +32,27 @@ test("buildLicenseNames produces a sequential list", () => {
     buildLicenseNames({ country: "IND", company: "Foo", startIndex: 1, count: 3 }),
     ["PPL_IND_Foo_001", "PPL_IND_Foo_002", "PPL_IND_Foo_003"]
   );
+});
+
+test("validateInputs accepts a well-formed input", () => {
+  const r = validateInputs({ token: "prod-x", company: "Acme", country: "JPN", count: 3, startIndex: 1 });
+  assert.equal(r.valid, true);
+  assert.deepEqual(r.errors, []);
+});
+
+test("validateInputs rejects missing token / company / country", () => {
+  const r = validateInputs({ token: "", company: "  ", country: "", count: 1, startIndex: 1 });
+  assert.equal(r.valid, false);
+  assert.equal(r.errors.length, 3);
+});
+
+test("validateInputs enforces count range 1..maxCount", () => {
+  assert.equal(validateInputs({ token: "t", company: "A", country: "JPN", count: 0, startIndex: 1 }).valid, false);
+  assert.equal(validateInputs({ token: "t", company: "A", country: "JPN", count: 101, startIndex: 1 }).valid, false);
+  assert.equal(validateInputs({ token: "t", company: "A", country: "JPN", count: 100, startIndex: 1 }).valid, true);
+});
+
+test("validateInputs enforces startIndex >= 1", () => {
+  assert.equal(validateInputs({ token: "t", company: "A", country: "JPN", count: 1, startIndex: 0 }).valid, false);
+  assert.equal(validateInputs({ token: "t", company: "A", country: "JPN", count: 1, startIndex: 1 }).valid, true);
 });
