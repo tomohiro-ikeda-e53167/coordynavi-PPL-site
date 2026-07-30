@@ -32,7 +32,7 @@ test("resolvePolicyId throws when not found", async () => {
   const fetchImpl = fakeFetch(() => ({ status: 200, body: { data: [] } }));
   await assert.rejects(
     resolvePolicyId({ ...base, policyName: "Nope", fetchImpl }),
-    /見つかりません/
+    /not found/
   );
 });
 

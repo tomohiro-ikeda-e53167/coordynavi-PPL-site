@@ -15,11 +15,11 @@ const TOKEN_KEY = "keygen_token";
 const nameOpts = { prefix: PREFIX, sep: SEP, pad: PAD };
 let cachedPolicyId = null;
 
-// --- 国ドロップダウン ---
+// --- Country dropdown ---
 function populateCountries() {
   const frag = document.createDocumentFragment();
   const placeholder = document.createElement("option");
-  placeholder.value = ""; placeholder.textContent = "— 国を選択 —";
+  placeholder.value = ""; placeholder.textContent = "— Select a country —";
   frag.appendChild(placeholder);
   for (const c of COUNTRIES) {
     const o = document.createElement("option");
@@ -27,11 +27,11 @@ function populateCountries() {
     frag.appendChild(o);
   }
   els.country.appendChild(frag);
-  // 既定で Japan を選択
+  // Default to Japan
   els.country.value = "JPN";
 }
 
-// --- トークンのセッション保持 ---
+// --- Token session persistence ---
 function initToken() {
   const saved = sessionStorage.getItem(TOKEN_KEY);
   if (saved) els.token.value = saved;
@@ -42,7 +42,7 @@ function initToken() {
   });
 }
 
-// --- プレビュー（トークン不要・即時） ---
+// --- Preview (no token needed, instant) ---
 function currentInputs() {
   return {
     token: els.token.value.trim(),
@@ -57,7 +57,7 @@ function renderPreview() {
   const { company, country, count, startIndex } = currentInputs();
   const san = sanitizeCompany(company);
   els.sanitizedNote.textContent = company
-    ? `整形後の会社名: ${san || "(空になります)"}`
+    ? `Sanitized company name: ${san || "(will be empty)"}`
     : "";
   els.previewList.innerHTML = "";
   const n = Number(count);
@@ -72,7 +72,7 @@ function renderPreview() {
   }
 }
 
-// --- 結果描画 ---
+// --- Render results ---
 function addResultRow(r) {
   const tr = document.createElement("tr");
   const tdName = document.createElement("td");
@@ -82,7 +82,7 @@ function addResultRow(r) {
   tdKey.textContent = r.status === "ok" ? r.key : "—";
   const tdStatus = document.createElement("td");
   if (r.status === "ok") { tdStatus.className = "ok"; tdStatus.textContent = "OK"; }
-  else { tdStatus.className = "fail"; tdStatus.textContent = "失敗: " + (r.error || ""); }
+  else { tdStatus.className = "fail"; tdStatus.textContent = "Failed: " + (r.error || ""); }
   tr.append(tdName, tdKey, tdStatus);
   els.resultsBody.appendChild(tr);
 }
@@ -92,7 +92,7 @@ function setStatus(msg, isError = false) {
   els.status.classList.toggle("error", isError);
 }
 
-// --- 発行 ---
+// --- Issue ---
 async function onIssue() {
   const input = currentInputs();
   const { valid, errors } = validateInputs(input, { maxCount: MAX_COUNT });
@@ -104,29 +104,29 @@ async function onIssue() {
   const apiBase = { apiUrl: KEYGEN_API, account: KEYGEN_ACCOUNT, token: input.token };
 
   try {
-    setStatus("ポリシーを確認中…");
+    setStatus("Resolving policy…");
     if (!cachedPolicyId) {
       cachedPolicyId = await resolvePolicyId({ ...apiBase, policyName: POLICY_NAME });
     }
-    setStatus(`発行中… (0/${names.length})`);
+    setStatus(`Issuing… (0/${names.length})`);
     let done = 0;
     const results = await issueBatch({
       ...apiBase, policyId: cachedPolicyId, names,
-      onResult: (r) => { addResultRow(r); done++; setStatus(`発行中… (${done}/${names.length})`); },
+      onResult: (r) => { addResultRow(r); done++; setStatus(`Issuing… (${done}/${names.length})`); },
     });
     const ok = results.filter((r) => r.status === "ok").length;
     const fail = results.length - ok;
-    setStatus(`完了: 成功 ${ok} / 失敗 ${fail}`, fail > 0);
+    setStatus(`Done: ${ok} succeeded / ${fail} failed`, fail > 0);
   } catch (e) {
-    // ポリシー解決失敗・ネットワーク/CORS など全体エラー
+    // Top-level failure: policy resolution, network/CORS, etc.
     cachedPolicyId = null;
-    setStatus("エラー: " + e.message + "（トークン・接続・CORS を確認してください）", true);
+    setStatus("Error: " + e.message + " (check the token, connection, and CORS)", true);
   } finally {
     els.issueBtn.disabled = false;
   }
 }
 
-// --- 初期化 ---
+// --- Init ---
 populateCountries();
 initToken();
 renderPreview();

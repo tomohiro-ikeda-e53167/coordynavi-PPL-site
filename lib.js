@@ -1,4 +1,4 @@
-// 純粋関数のみ（DOM・ネットワークに依存しない）。ブラウザと Node テストの両方から使う。
+// Pure functions only (no DOM/network). Used by both the browser and Node tests.
 
 export function sanitizeCompany(input) {
   return String(input ?? "").trim().replace(/\s+/g, "").replace(/_/g, "");
@@ -29,12 +29,12 @@ export function buildLicenseNames({ country, company, startIndex, count }, opts 
 
 export function validateInputs({ token, company, country, count, startIndex }, { maxCount = 100 } = {}) {
   const errors = [];
-  if (!token || !String(token).trim()) errors.push("トークンを入力してください");
-  if (!company || !sanitizeCompany(company)) errors.push("会社名を入力してください");
-  if (!country || !/^[A-Za-z]{3}$/.test(String(country))) errors.push("国を選択してください");
+  if (!token || !String(token).trim()) errors.push("Please enter a token");
+  if (!company || !sanitizeCompany(company)) errors.push("Please enter a company name");
+  if (!country || !/^[A-Za-z]{3}$/.test(String(country))) errors.push("Please select a country");
   const n = Number(count);
-  if (!Number.isInteger(n) || n < 1 || n > maxCount) errors.push(`必要本数は 1〜${maxCount} で指定してください`);
+  if (!Number.isInteger(n) || n < 1 || n > maxCount) errors.push(`Quantity must be between 1 and ${maxCount}`);
   const s = Number(startIndex);
-  if (!Number.isInteger(s) || s < 1) errors.push("開始インデックスは 1 以上で指定してください");
+  if (!Number.isInteger(s) || s < 1) errors.push("Start index must be 1 or greater");
   return { valid: errors.length === 0, errors };
 }

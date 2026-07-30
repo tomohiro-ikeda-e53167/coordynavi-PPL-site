@@ -1,4 +1,4 @@
-// Keygen REST API クライアント（JSON:API）。fetchImpl を差し替え可能にしてテスト容易にする。
+// Keygen REST API client (JSON:API). fetchImpl is injectable to make testing easy.
 const MEDIA = "application/vnd.api+json";
 
 async function api(method, path, { apiUrl, account, token, body, fetchImpl }) {
@@ -33,8 +33,8 @@ export async function resolvePolicyId({ apiUrl, account, token, policyName, fetc
     }
     if (rows.length < 100) break;
   }
-  if (found.length === 0) throw new Error(`ポリシーが見つかりません: "${policyName}"`);
-  if (found.length > 1) throw new Error(`ポリシー名が重複しています: "${policyName}"（管理者に確認してください）`);
+  if (found.length === 0) throw new Error(`Policy not found: "${policyName}"`);
+  if (found.length > 1) throw new Error(`Duplicate policy name: "${policyName}" (please check with an administrator)`);
   return found[0].id;
 }
 

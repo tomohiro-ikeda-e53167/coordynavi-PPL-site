@@ -1,49 +1,52 @@
-# CoordyNavi 促進ライセンス発行サイト
+# CoordyNavi Promotion License Issuer
 
-営業用に、会社名・国・本数・開始インデックスを指定して
-`CoordyNavi_Promotion_1Year` ポリシーの Keygen ライセンスを連番発行する静的サイト。
+A static site for sales use that issues Keygen licenses under the
+`CoordyNavi_Promotion_1Year` policy in sequence, given a company name, country,
+quantity, and start index.
 
-- 命名: `PPL_<国3桁英字>_<会社名>_<3桁index>`（例 `PPL_JPN_AcmeCorp_001`）
-- バックエンド無し。ブラウザから Keygen API を直接呼ぶ
-- トークンは各利用者が入力し、ブラウザのセッションにのみ保持（タブを閉じると消える）
+- Naming: `PPL_<3-letter country code>_<company>_<3-digit index>` (e.g. `PPL_JPN_AcmeCorp_001`)
+- No backend. The browser calls the Keygen API directly.
+- Each user enters their own token; it is kept only in the browser session (cleared when the tab is closed).
 
-## 使い方
+## Usage
 
-1. サイトを開く
-2. **Product トークン**を貼り付ける（取得方法は下記）
-3. 会社名・国・必要本数・開始インデックスを入力
-4. プレビューで発行予定名を確認し「発行する」
-5. 結果表に「ライセンス名＋ライセンスキー」が出る
+1. Open the site.
+2. Paste a **Product token** (see below for how to obtain one).
+3. Enter the company name, country, quantity, and start index.
+4. Check the preview of the names to be issued, then click **Issue licenses**.
+5. The results table shows the license name and license key for each.
 
-## Product トークンの取得
+## Obtaining a Product token
 
-Keygen ダッシュボード → Settings → Tokens、または管理者から配布された
-`prod-` で始まるトークンを使う。admin トークンでも動作するが、権限が強すぎるため
-**Product トークン推奨**（漏洩してもアカウント全体を破壊できない）。
+Use a token starting with `prod-`, either from the Keygen dashboard
+(Settings → Tokens) or one distributed by an administrator. An admin token also
+works, but it is too privileged — a **Product token is recommended** (a leaked
+Product token cannot destroy the whole account).
 
-## 開発 / ローカル実行
+## Development / running locally
 
-ES モジュールを使うため `file://` では動かない。ローカルサーバで開く:
+Because the app uses ES modules, it does not run from `file://`. Serve it locally:
 
 ```bash
 python -m http.server 8080
 # → http://localhost:8080/
 ```
 
-テスト（ネットワーク不要の純粋ロジック）:
+Tests (pure logic, no network required):
 
 ```bash
 node --test
 ```
 
-## デプロイ（GitHub Pages）
+## Deploy (GitHub Pages)
 
-1. このフォルダを GitHub リポジトリとして push
-2. リポジトリ Settings → Pages → Source を `main` ブランチ / `/ (root)` に設定
-3. 発行された URL を営業担当に共有
+1. Push this folder to a GitHub repository.
+2. In the repository, set Settings → Pages → Source to the `main` branch / `/ (root)`.
+3. Share the published URL with the sales team.
 
-秘密情報はリポジトリに含めない（トークンは利用者がブラウザで入力する）。
+No secrets are included in the repository (the token is entered by the user in the browser).
 
-## 設定
+## Configuration
 
-`config.js` にアカウント ID・ポリシー名・命名規則・本数上限を定義。変更時はここを編集。
+`config.js` defines the account ID, policy name, naming rules, and quantity cap.
+Edit it there when changes are needed.
