@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>CoordyNavi 促進ライセンス発行</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <main>
+    <h1>CoordyNavi 促進ライセンス発行</h1>
+    <p class="policy">ポリシー: <code>CoordyNavi_Promotion_1Year</code></p>
+
+    <section class="card">
+      <h2>1. Keygen トークン</h2>
+      <label for="token">Product トークン（推奨）</label>
+      <input id="token" type="password" autocomplete="off" placeholder="prod-xxxxxxxx..." />
+      <p class="hint">トークンはこのブラウザのセッションにのみ保持され、タブを閉じると消えます。リポジトリやサーバには保存されません。</p>
+    </section>
+
+    <section class="card">
+      <h2>2. 発行内容</h2>
+      <label for="company">会社名</label>
+      <input id="company" type="text" placeholder="Acme Corp" />
+
+      <label for="country">国</label>
+      <select id="country"></select>
+
+      <div class="row">
+        <div>
+          <label for="count">必要本数</label>
+          <input id="count" type="number" min="1" max="100" value="1" />
+        </div>
+        <div>
+          <label for="startIndex">開始インデックス</label>
+          <input id="startIndex" type="number" min="1" value="1" />
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>3. プレビュー</h2>
+      <p id="sanitizedNote" class="hint"></p>
+      <ol id="previewList" class="preview"></ol>
+      <button id="issueBtn" type="button">発行する</button>
+      <p id="status" class="status" role="status" aria-live="polite"></p>
+    </section>
+
+    <section class="card">
+      <h2>4. 発行結果</h2>
+      <table class="results">
+        <thead>
+          <tr><th>ライセンス名</th><th>ライセンスキー</th><th>状態</th></tr>
+        </thead>
+        <tbody id="resultsBody"></tbody>
+      </table>
+    </section>
+  </main>
+  <script type="module" src="app.js"></script>
+</body>
+</html>
